@@ -1,26 +1,39 @@
 'use strict';
-var RecordRTC = require('recordrtc');
-
+const RecordRTC = require('recordrtc');
 var recordRTC;
-console.log("This is the record javascript file.");
+var recordingStatus;
+var isRecording;
 
-var audioPromise = navigator.mediaDevices.getUserMedia({audio: true});
-
-function successGetMediaCallback(mediaStream) {
+function successStartRecordingCallback(mediaStream) {
   var options = {
     type: 'audio',
   };
   recordRTC = RecordRTC(mediaStream, options);
   recordRTC.startRecording();
-  setTimeout(function(){
-      console.log('after');
-  },5000);
+  console.log("Started recording");
+  isRecording = true;
+}
+
+function successStopRecordingCallback(mediaStream) {
   recordRTC.stopRecording();
-  console.log(recordRTC);
+  console.log("Stopped recording.");
+  isRecording = false;
 }
 
 function errorMediaCallback(error) {
   console.log("There was an error getting the media stream.");
 }
 
-audioPromise.then(successGetMediaCallback).catch(errorMediaCallback);
+var recordModule = angular.module('recordModule', []);
+  recordModule.controller('mainController', function($scope) {
+   $scope.quantity=1;
+   $scope.startRecording = function() {
+     var audioPromise = navigator.mediaDevices.getUserMedia({audio: true});
+     audioPromise.then(successStartRecordingCallback).catch(errorMediaCallback);
+   }
+   $scope.stopRecording = function() {
+     console.log("Stop recording");
+     var audioPromise = navigator.mediaDevices.getUserMedia({audio: true});
+     audioPromise.then(successStopRecordingCallback).catch(errorMediaCallback);
+   }
+ });

@@ -1,19 +1,23 @@
 <!doctype html>
-<html>
+<html ng-app="recordModule">
 	<head>
 		<meta charset="utf-8">
 		<title>Recording App</title>
 		<link rel="stylesheet" href="index.css">
+		<script type="text/javascript" src="../node_modules/angular/angular.js"></script>
 		<script src="record.js"></script>
 	</head>
 	<body>
-		<div class="container">
+		<div class="container" ng-controller="mainController">
 			<header>
 				<h1>Recording App</h1>
 			</header>
 			<section class="main">
-				<button>
+				<button ng-click="startRecording()" ng-hide="isRecording">
 					Start recording
+				</button>
+				<button ng-click="stopRecording()" ng-show="isRecording">
+					Stop recording
 				</button>
 			</section>
 			<footer></footer>

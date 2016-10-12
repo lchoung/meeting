@@ -25,6 +25,7 @@
     "electron"
   ],
   "dependencies": {
+    "angular": "^1.5.8",
     "electron-debug": "^1.0.0",
     "recordrtc": "^5.4.0"
   },
