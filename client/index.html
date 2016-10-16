@@ -8,12 +8,12 @@
 		<script src="record.js"></script>
 	</head>
 	<body>
-		<div class="container" ng-controller="mainController">
+		<div class="container" ng-controller="mainController" ng-init="isRecording=false">
 			<header>
 				<h1>Recording App</h1>
 			</header>
 			<section class="main">
-				<button ng-click="startRecording()" ng-hide="isRecording">
+				<button ng-click="startRecording()" ng-show="!isRecording">
 					Start recording
 				</button>
 				<button ng-click="stopRecording()" ng-show="isRecording">
