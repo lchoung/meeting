@@ -27,6 +27,7 @@
   "dependencies": {
     "angular": "^1.5.8",
     "electron-debug": "^1.0.0",
+    "mongodb": "^2.2.10",
     "recordrtc": "^5.4.0"
   },
   "devDependencies": {
