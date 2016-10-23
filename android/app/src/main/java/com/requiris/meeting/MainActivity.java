@@ -1,5 +1,6 @@
 package com.requiris.meeting;
 
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.app.Activity;
@@ -13,19 +14,14 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.BulkWriteOperation;
-import com.mongodb.BulkWriteResult;
-import com.mongodb.Cursor;
-import com.mongodb.DB;
+import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-import com.mongodb.ParallelScanOptions;
-import com.mongodb.ServerAddress;
+import org.bson.Document;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -43,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 	private MongoClient mongoClient;
 	private MongoDatabase db;
 	private MongoCollection coll;
+	private List<Long> timestampsList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +50,16 @@ public class MainActivity extends AppCompatActivity {
 		startButton = (Button) findViewById(R.id.timerButton);
 		timeButton = (Button) findViewById(R.id.printTimeButton);
 
-		MongoClient mongoClient = new MongoClient();
-		MongoDatabase db = mongoClient.getDatabase("mongodb://meeting-admin:ce902ffsd318e@ds059306.mlab.com:59306/meeting");
-		MongoCollection coll = db.getCollection("recordings");
+		MongoClientURI uri  = new MongoClientURI("mongodb://meeting-admin:ce902ffsd318e@ds059306.mlab.com:59306/meeting");
+		try {
+			mongoClient = new MongoClient(uri);
+			db = mongoClient.getDatabase(uri.getDatabase());
+			coll = db.getCollection("private_timestamps");
+		} catch (Exception e) {
 
-		//System.out.println(coll.count());
+		}
+
+		timestampsList = new ArrayList<Long>();
 	}
 
 	/*@Override
@@ -85,6 +87,10 @@ public class MainActivity extends AppCompatActivity {
 	public void startClock(View view) {
 		startTime = SystemClock.uptimeMillis();
 		customHandler.postDelayed(updateTimerThread, 0);
+
+		new InsertTimeTask().execute();
+
+		//TODO: task that creates or latches onto a new document
 	}
 
 	public void printTime(View view) {
@@ -95,12 +101,8 @@ public class MainActivity extends AppCompatActivity {
 		timerValue.setText("" + mins + ":"
 				+ String.format("%02d", secs) + ":"
 				+ String.format("%03d", milliseconds));
-timerValue.setText("count!! " + db.getName());
-		addToDatabase();
-	}
 
-	private void addToDatabase() {
-
+		timestampsList.add(updatedTime);
 	}
 
 	private Runnable updateTimerThread = new Runnable() {
@@ -115,5 +117,45 @@ timerValue.setText("count!! " + db.getName());
 		}
 
 	};
+
+	//tasks
+
+	//fix this to be smarter later, just want to see if it works for now
+	class InsertTimeTask extends AsyncTask<Void, Void, Boolean> {
+		protected Boolean doInBackground(Void... stuff) {
+			try {
+				Document doc = new Document();
+				doc.put("timestamps", timestampsList);
+				coll.insertOne(doc);
+				return true;
+			} catch (Exception e) {
+				return false;
+			}
+		}
+
+		protected void onPostExecute(Boolean b) {
+			timestampsList = new ArrayList<Long>();
+			if (b == true) {
+				timerValue.setText("Done!");
+			} else {
+				timerValue.setText("Failed.");
+			}
+		}
+	}
+
+	//simple task to ensure I'm doing things right
+	class GetCollNumTask extends AsyncTask<Void, Void, Long> {
+		protected Long doInBackground(Void... stuff) {
+			try {
+				return coll.count();
+			} catch (Exception e) {
+				return (long)-1;
+			}
+		}
+
+		protected void onPostExecute(Long collNum) {
+			timerValue.setText("count!! " + collNum);
+		}
+	}
 }
 
