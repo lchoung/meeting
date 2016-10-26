@@ -4,8 +4,18 @@
 		<meta charset="utf-8">
 		<title>Recording App</title>
 		<link rel="stylesheet" href="index.css">
+        
+        <!-- Insert this line above script imports  -->
+<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+        
+        <script type="text/javascript" src="../node_modules/jquery/dist/jquery.js"></script>
 		<script type="text/javascript" src="../node_modules/angular/angular.js"></script>
 		<script src="record.js"></script>
+        <script src="wavesurfermin.js"></script>
+        <script src="wavesurfer.js"></script>
+        
+        <!-- Insert this line after script imports -->
+<script>if (window.module) module = window.module;</script>
 	</head>
 	<body>
 		<div class="container" ng-controller="mainController" ng-init="isRecording=false">
@@ -13,6 +23,14 @@
 				<h1>Recording App</h1>
 			</header>
 			<section class="main">
+                <div id="waveform">     
+                    <div style="text-align: center">
+                        <button class="btn btn-primary" onclick="wavesurfer.playPause()">
+                            <i class="glyphicon glyphicon-play"></i>
+                                Play/Pause
+                        </button>
+                    </div>
+                </div>
 				<button ng-click="startRecording()" ng-show="!isRecording">
 					Start recording
 				</button>
