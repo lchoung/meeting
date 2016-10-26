@@ -1,7 +1,6 @@
 'use strict';
 var mongodb = require('mongodb');
 const RecordRTC = require('recordrtc');
-
 var uri = 'mongodb://meeting-admin:ce902ffsd318e@ds059306.mlab.com:59306/meeting';
 
 var recordRTC;
@@ -30,15 +29,15 @@ recordModule.controller('mainController', function($scope) {
   function successStopRecordingCallback(mediaStream) {
     recordRTC.stopRecording(function(audioURL) {
       var formData = new FormData();
-      formData.append('edition[audio]', recordRTC.getBlob())
+      formData.append('edition[audio]', recordRTC.getBlob());
+      formData.append('test_thing', 'hello');
       console.log(formData.get('edition[audio]'));
       console.log(recordRTC.getBlob());
 
       mongodb.MongoClient.connect(uri, function(err, db) {
         if (err) throw err;
-
         var recordings = db.collection('recordings');
-        recordings.insert(formData, function(err, data) {
+        recordings.insert({cat:"hello", qty: 15}, function(err, data) {
           if (err) throw err;
           console.log("Successful insertion into db");
         });

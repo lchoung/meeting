@@ -31,13 +31,13 @@ function createMainWindow() {
 
 /* TODO: fix this so that new window pops up when 'start' is clicked,
 not on app open */
-function createNewWindow() {
+function createSummaryWindow() {
 	const win = new electron.BrowserWindow({
 		width: 600,
 		height: 600
 	});
 
-	win.loadURL(`file://${__dirname}/client/newpage.html`);
+	win.loadURL(`file://${__dirname}/client/summary.html`);
 	win.on('closed', onClosed);
 
 	return win;
@@ -52,16 +52,13 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
 	if (!mainWindow) {
 		mainWindow = createMainWindow();
-		newWindow = createNewWindow();
+		newWindow = createSummaryWindow();
 
 	}
 });
 
 app.on('ready', () => {
-	newWindow = createNewWindow(); //sorry about this -_-
+	newWindow = createSummaryWindow(); //sorry about this -_-
 	mainWindow = createMainWindow();
-	
+
 });
-
-
-
